@@ -6,12 +6,15 @@ const typeDefs = `#graphql
   type Column {
     id: ID!
     title: String!
-    tasks: [Task!]!
+  
+    tasks: [Task]
   }
 
   type Task {
     id: ID!
     title: String!
+
+    content: String
   }
 
   type Query {
@@ -84,6 +87,7 @@ const saveData = () => {
 const loadData = () => {
   try {
     columns = JSON.parse(readFileSync("data.json", "utf-8"));
+    console.log("columns :>> ", columns);
   } catch (e) {
     columns = [];
   }
