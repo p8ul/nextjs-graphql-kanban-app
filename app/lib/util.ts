@@ -3,8 +3,8 @@ export const convertData = (original) => {
 
   original?.columns?.forEach((column) => {
     result[column.id] = {
-      name: column.title,
-      items: column.tasks.map((task) => ({ id: task.id, content: task.title })),
+      title: column.title,
+      items: column.tasks.map((task) => ({ id: task.id, title: task.title })),
     };
   });
   return result;

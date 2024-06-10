@@ -6,8 +6,7 @@ export const GET_COLUMNS = gql`
       id
       title
       tasks {
-        id
-        content
+        id 
         title
       }
     }

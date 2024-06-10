@@ -7,15 +7,23 @@ const typeDefs = `#graphql
   type Column {
     id: ID!
     title: String!
-  
     tasks: [Task]
   }
 
   type Task {
     id: ID!
     title: String!
+  }
 
-    content: String
+  input ColumnInput {
+    id: ID!
+    title: String!
+    tasks: [TaskInput]
+  }
+
+  input TaskInput {
+    id: ID!
+    title: String!
   }
 
   type Query {
@@ -27,7 +35,9 @@ const typeDefs = `#graphql
     deleteColumn(id: ID!): Boolean
     createTask(columnId: ID!, title: String!): Task
     deleteTask(columnId: ID!, taskId: ID!): Boolean
-    updateColumns(columns: [Column!]!): Boolean
+    updateColumns(updatedColumns: [ColumnInput!]!): Boolean
+    updateColumnName(columnId: ID!, newTitle: String!): Boolean
+    clearColumnTasks(columnId: ID!): Boolean
   }
 `;
 
@@ -57,10 +67,9 @@ const resolvers = {
       return task;
     },
     updateColumns: (_, { updatedColumns }) => {
-      const task = { id: uuid(), title };
-      columns = updatedColumns
+      columns = updatedColumns;
       saveData();
-      return task;
+      return true;
     },
     deleteTask: (_, { columnId, taskId }) => {
       const column = columns.find((column) => column.id === columnId);
@@ -68,21 +77,23 @@ const resolvers = {
       saveData();
       return true;
     },
-    moveTask: (_, { taskId, sourceColumnId, targetColumnId }) => {
-      const sourceColumn = columns.find(
-        (column) => column.id === sourceColumnId
-      );
-      const task = sourceColumn.tasks.find((task) => task.id === taskId);
-      sourceColumn.tasks = sourceColumn.tasks.filter(
-        (task) => task.id !== taskId
-      );
-
-      const targetColumn = columns.find(
-        (column) => column.id === targetColumnId
-      );
-      targetColumn.tasks.push(task);
-      saveData();
-      return true;
+    updateColumnName: (_, { columnId, newTitle }) => {
+      const column = columns.find((column) => column.id === columnId);
+      if (column) {
+        column.title = newTitle;
+        saveData();
+        return true;
+      }
+      return false; // Column not found
+    },
+    clearColumnTasks: (_, { columnId }) => {
+      const column = columns.find((column) => column.id === columnId);
+      if (column) {
+        column.tasks = [];
+        saveData();
+        return true;
+      }
+      return false; // Column not found
     },
   },
 };

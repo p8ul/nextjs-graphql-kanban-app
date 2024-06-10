@@ -1,12 +1,12 @@
 import { useMutation } from "@apollo/client";
-import { CREATE_COLUMN } from "../graphql/mutations";
+import { UPDATE_COLUMNS } from "../graphql/mutations";
 
-export const useCreateColumn = ({
+export const useUpdateColumns = ({
   onComplete,
 }: {
   onComplete?: () => void;
 }) => {
-  const [mutation, options] = useMutation(CREATE_COLUMN, {
+  const [mutation, options] = useMutation(UPDATE_COLUMNS, {
     onCompleted: (data: any) => {
       onComplete && onComplete();
     },
