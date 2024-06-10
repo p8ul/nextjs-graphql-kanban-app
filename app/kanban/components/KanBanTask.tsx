@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, TextField, Button } from "@mui/material";
+import InputForm from "@/app/components/Form/InputForm";
 
 interface Item {
   title: string;
@@ -11,6 +12,7 @@ interface MyComponentProps {
   item: Item;
   onUpdateItem: (columnId: string, item: Item) => void;
   onDelete: (columnId: string, taskId: string) => void;
+  updateTask: (columnId: string, taskId: string, task: Item) => void;
 }
 
 const KanBanTask: React.FC<MyComponentProps> = ({
@@ -18,6 +20,7 @@ const KanBanTask: React.FC<MyComponentProps> = ({
   item,
   onUpdateItem,
   onDelete,
+  updateTask,
 }) => {
   const [title, setTitle] = useState(item.title);
   const [isEditing, setIsEditing] = useState(false);
@@ -35,36 +38,24 @@ const KanBanTask: React.FC<MyComponentProps> = ({
 
   return (
     <Box sx={{ width: "100%" }}>
-      
       {isEditing ? (
         <>
-          <TextField
-            id="outlined-basic"
-            label="Title"
-            variant="outlined"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            sx={{ width: "100%" }}
-          />
-          <Box
-            sx={{
-              width: "100%",
-              justifyContent: "space-between",
-              display: "flex",
-              marginTop: 2,
+          <InputForm
+            onAdd={(columnId, title) => {
+              updateTask(columnId, item.id, { ...item, title });
             }}
-          >
-            <Button onClick={handleCancel}>Cancel</Button>
-            <Button variant="contained" onClick={handleSave}>
-              Save
-            </Button>
-          </Box>
+            onCancel={() => setIsEditing(false)}
+            columnId={columnId}
+            value={item.title}
+          />
         </>
       ) : (
         <>
           <Box sx={{ alignItems: "center" }}>
             <Box>
-              <div onClick={() => setShowActions(!showActions)}>{item.title}</div>
+              <div onClick={() => setShowActions(!showActions)}>
+                {item.title}
+              </div>
             </Box>
             {showActions ? (
               <Box>

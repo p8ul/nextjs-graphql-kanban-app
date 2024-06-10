@@ -21,13 +21,17 @@ interface KanbanColumnProps {
   onDelete: () => void;
   addTask: (columnId: string, title: string) => void;
   columnId: string;
+  updateColumnName: (newTitle: string) => void;
+  clearColumnTasks: (columnId: string) => void;
 }
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
   title,
   children,
   onDelete,
   addTask,
-  columnId
+  columnId,
+  updateColumnName,
+  clearColumnTasks,
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -39,27 +43,40 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   };
 
   const [addTaskOpen, setAddTaskOpen] = React.useState(false);
-
+  const [isEditing, setIsEditing] = React.useState(false);
   return (
     <Box sx={{ padding: 1 }}>
       <Paper elevation={1}>
         <Card sx={{ maxWidth: 345 }}>
           <Divider />
-          <CardHeader
-            action={
-              <IconButton
-                aria-label="settings"
-                id="basic-button"
-                aria-controls={open ? "basic-menu" : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? "true" : undefined}
-                onClick={handleClick}
-              >
-                <MoreVertIcon />
-              </IconButton>
-            }
-            title={title}
-          />
+          {isEditing ? (
+            <Box padding={2}>
+              <InputForm
+                onAdd={(_, title) => {
+                  updateColumnName(title);
+                  setIsEditing(false);
+                }}
+                value={title}
+                onCancel={() => setIsEditing(false)}
+              />
+            </Box>
+          ) : (
+            <CardHeader
+              action={
+                <IconButton
+                  aria-label="settings"
+                  id="basic-button"
+                  aria-controls={open ? "basic-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  onClick={handleClick}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              }
+              title={title}
+            />
+          )}
           <Menu
             id="basic-menu"
             anchorEl={anchorEl}
@@ -72,11 +89,19 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
             <MenuItem
               onClick={() => {
                 handleClose();
+                setIsEditing(true);
               }}
             >
               Rename
             </MenuItem>
-            <MenuItem onClick={handleClose}>Clear</MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                clearColumnTasks(columnId);
+              }}
+            >
+              Clear
+            </MenuItem>
             <MenuItem
               onClick={() => {
                 handleClose();

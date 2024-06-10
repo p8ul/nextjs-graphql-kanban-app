@@ -38,6 +38,7 @@ const typeDefs = `#graphql
     updateColumns(updatedColumns: [ColumnInput!]!): Boolean
     updateColumnName(columnId: ID!, newTitle: String!): Boolean
     clearColumnTasks(columnId: ID!): Boolean
+    updateTask(columnId: ID!, taskId: ID!, updatedTask: TaskInput!): Boolean
   }
 `;
 
@@ -94,6 +95,19 @@ const resolvers = {
         return true;
       }
       return false; // Column not found
+    },
+    updateTask: (_, { columnId, taskId, updatedTask }) => {
+      const column = columns.find((column) => column.id === columnId);
+      if (column) {
+        const task = column.tasks.find((task) => task.id === taskId);
+        if (task) {
+          task.title = updatedTask.title;
+          task.id = updatedTask.id;
+          saveData();
+          return true;
+        }
+      }
+      return false; // Column or task not found
     },
   },
 };

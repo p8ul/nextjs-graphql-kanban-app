@@ -12,6 +12,9 @@ import KanbanColumn from "../components/KanbanColumn";
 import { Box } from "@mui/material";
 import KanBanTask from "../components/KanBanTask";
 import ColumnCreator from "../components/ColumnCreator";
+import { useUpdateColumnName } from "../hooks/useUpdateColumnName";
+import { useClearColumnTasks } from "../hooks/useClearColumnTasks";
+import { useUpdateTask } from "../hooks/useUpdateTask";
 
 const Board = () => {
   const { data, loading, error, refetch } = useGetColumns();
@@ -28,6 +31,18 @@ const Board = () => {
     onComplete: () => refetch && refetch(),
   });
   const [updateColumns] = useUpdateColumns({
+    onComplete: () => refetch && refetch(),
+  });
+
+  const [updateColumnName] = useUpdateColumnName({
+    onComplete: () => refetch && refetch(),
+  });
+
+  const [clearColumnTasks] = useClearColumnTasks({
+    onComplete: () => refetch && refetch(),
+  });
+
+  const [updateTask] = useUpdateTask({
     onComplete: () => refetch && refetch(),
   });
 
@@ -129,6 +144,7 @@ const Board = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+               
               }}
               key={columnId}
             >
@@ -137,6 +153,17 @@ const Board = () => {
                 onDelete={() => deleteColumn({ variables: { id: columnId } })}
                 columnId={columnId}
                 addTask={handleAddTask}
+                clearColumnTasks={(columnId) => {
+                  clearColumnTasks({ variables: { columnId } });
+                }}
+                updateColumnName={(newTitle) =>
+                  updateColumnName({
+                    variables: {
+                      columnId,
+                      newTitle,
+                    },
+                  })
+                }
               >
                 <Box sx={{ margin: 1 }}>
                   <Droppable droppableId={columnId} key={columnId}>
@@ -187,6 +214,15 @@ const Board = () => {
                                         item={item}
                                         columnId={columnId}
                                         onUpdateItem={() => {}}
+                                        updateTask={(columnId, taskId, task) => {
+                                          updateTask({
+                                            variables: {
+                                              columnId,
+                                              taskId,
+                                              task
+                                            }
+                                          })
+                                        }}
                                         onDelete={(columnId, taskId) => {
                                           deleteTask({
                                             variables: {

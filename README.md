@@ -1,4 +1,7 @@
 # Kanban Board
+## Features
+- Ability to create columns in card design format, assign them names, rename, delete columns
+- Ability to create tasks within the columns
 ## Getting Started
 
 First, run the development server:

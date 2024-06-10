@@ -50,3 +50,9 @@ export const CLEAR_COLUMN_TASKS = gql`
     clearColumnTasks(columnId: $columnId)
   }
 `;
+
+export const UPDATE_TASK = gql`
+  mutation updateTask($columnId: ID!, $taskId: ID!, $task: TaskInput!) {
+    updateTask(columnId: $columnId, taskId: $taskId, updatedTask: $task)
+  }
+`;

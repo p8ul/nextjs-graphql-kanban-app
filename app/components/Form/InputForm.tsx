@@ -4,15 +4,17 @@ import { Box, TextField, Button } from "@mui/material";
 interface MyComponentProps {
   onAdd: (columnId: string, title: string) => void;
   onCancel: () => void;
-  columnId: string;
+  columnId?: string;
+  value?: string;
 }
 
 const InputForm: React.FC<MyComponentProps> = ({
   onAdd,
   onCancel,
   columnId,
+  value
 }) => {
-  const [name, setName] = React.useState("");
+  const [name, setName] = React.useState(value || '');
   return (
     <Box sx={{ width: "100%" }}>
       <TextField
