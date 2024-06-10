@@ -129,9 +129,10 @@ const Board = () => {
     <Box
       sx={{
         display: "flex",
-        justifyContent: "center",
         height: "100%",
         overflow: "scroll",
+        paddingBottom: 5,
+       
       }}
     >
       <DragDropContext
@@ -251,6 +252,7 @@ const Board = () => {
       </DragDropContext>
       <Box>
         <ColumnCreator
+          totalColumns={columns?.length || 0}
           onCreateColumn={(title: string) => {
             createColumn({
               variables: {

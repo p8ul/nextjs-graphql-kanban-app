@@ -47,7 +47,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   return (
     <Box sx={{ padding: 1 }}>
       <Paper elevation={1}>
-        <Card sx={{ maxWidth: 345 }}>
+        <Card sx={{ maxWidth: 305 }}>
           <Divider />
           {isEditing ? (
             <Box padding={2}>

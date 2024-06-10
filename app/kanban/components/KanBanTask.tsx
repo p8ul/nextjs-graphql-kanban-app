@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Box, TextField, Button } from "@mui/material";
+import { Box, Button, IconButton, Menu, MenuItem } from "@mui/material";
 import InputForm from "@/app/components/Form/InputForm";
-
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 interface Item {
   title: string;
   id: string;
@@ -26,14 +26,13 @@ const KanBanTask: React.FC<MyComponentProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [showActions, setShowActions] = useState(false);
 
-  const handleSave = () => {
-    onUpdateItem(columnId, { ...item, title });
-    setIsEditing(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
   };
-
-  const handleCancel = () => {
-    setTitle(item.title);
-    setIsEditing(false);
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -51,24 +50,62 @@ const KanBanTask: React.FC<MyComponentProps> = ({
         </>
       ) : (
         <>
-          <Box sx={{ alignItems: "center" }}>
+          <Box sx={{ alignItems: "center", position: "relative" }}>
             <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  position: "absolute",
+                  right: 1,
+                  top: 1,
+                }}
+              >
+                <IconButton
+                  aria-label="settings"
+                  id="basic-button"
+                  aria-controls={open ? "basic-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  onClick={handleClick}
+                  sx={{
+                    padding: 0
+                  }}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    "aria-labelledby": "basic-button",
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      setIsEditing(true);
+                    }}
+                  >
+                    Edit
+                  </MenuItem>
+
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      onDelete(columnId, item.id);
+                    }}
+                  >
+                    Delete
+                  </MenuItem>
+                </Menu>
+              </Box>
               <div onClick={() => setShowActions(!showActions)}>
                 {item.title}
               </div>
             </Box>
-            {showActions ? (
-              <Box>
-                <Button onClick={() => setIsEditing(true)}>Edit</Button>
-                <Button
-                  onClick={() => {
-                    onDelete(columnId, item.id);
-                  }}
-                >
-                  Delete
-                </Button>
-              </Box>
-            ) : null}
           </Box>
         </>
       )}

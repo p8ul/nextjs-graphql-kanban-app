@@ -13,9 +13,13 @@ import InputForm from "@/app/components/Form/InputForm";
 
 interface ColumnCreatorProps {
   onCreateColumn: (title: string) => void;
+  totalColumns: number;
 }
 
-const ColumnCreator: React.FC<ColumnCreatorProps> = ({ onCreateColumn }) => {
+const ColumnCreator: React.FC<ColumnCreatorProps> = ({
+  onCreateColumn,
+  totalColumns,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
 
   return (
@@ -23,13 +27,13 @@ const ColumnCreator: React.FC<ColumnCreatorProps> = ({ onCreateColumn }) => {
       <Box sx={{ paddingTop: 1 }}>
         <Paper elevation={1}>
           <Divider />
-          {/* <Card sx={{ maxWidth: 345,  padding: 2 }}> */}
           {!isEditing ? (
             <Card sx={{ maxWidth: 345, minWidth: 300, padding: 0 }}>
               <CardContent sx={{ display: "flex", justifyContent: "center" }}>
                 <Button
                   sx={{ width: 200, padding: 0 }}
                   onClick={() => setIsEditing(true)}
+                  disabled={totalColumns > 5}
                 >
                   Add Column
                 </Button>
@@ -47,7 +51,6 @@ const ColumnCreator: React.FC<ColumnCreatorProps> = ({ onCreateColumn }) => {
               />
             </Card>
           ) : null}
-          {/* </Card> */}
         </Paper>
       </Box>
     </Box>
