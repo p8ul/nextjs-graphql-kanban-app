@@ -27,12 +27,12 @@ const Board = () => {
   const handleOpenSnackbar = () => {
     setOpenSnackbar(true);
   };
-  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [showSnackbar, setShowSnackbar] = useState(false); // use to ensure that the snackbar is not shown when you reload page
 
   const [createColumn] = useCreateColumn({
     onComplete: () => {
       refetch && refetch();
-      setShowSnackbar(true)
+      setShowSnackbar(true);
     },
   });
   const [createTask] = useCreateTask({
@@ -78,7 +78,7 @@ const Board = () => {
       setTotalColumns(data?.columns?.length || 0);
       if (data?.columns?.length > 4 && showSnackbar) {
         handleOpenSnackbar();
-        setShowSnackbar(false)
+        setShowSnackbar(false);
       }
     }
   }, [data, loading]);
@@ -96,18 +96,32 @@ const Board = () => {
     return result;
   };
 
+  /**
+   * Function to handle drag and drop events within the Kanban board.
+   * It updates the state of columns based on the drag and drop result.
+   * @param {Object} result - The result of the drag and drop operation.
+   * @param {Object} columns - The current state of columns in the Kanban board.
+   * @param {Function} setColumns - Function to update the state of columns.
+   */
   const onDragEnd = (result, columns, setColumns) => {
+    // Check if the drag and drop resulted in a valid destination
     if (!result.destination) return;
 
+    // Destructure source and destination from the drag and drop result
     const { source, destination } = result;
 
+    // Check if the item was moved within the same column or to a different column
     if (source.droppableId !== destination.droppableId) {
+      // Moving item to a different column
+      // Retrieve source and destination columns and their items
       const sourceColumn = columns[source.droppableId];
       const destinationColumn = columns[destination.droppableId];
       const sourceItems = [...sourceColumn.items];
       const destinationItems = [...destinationColumn.items];
+      // Remove item from source column and add it to destination column
       const [movedItem] = sourceItems.splice(source.index, 1);
       destinationItems.splice(destination.index, 0, movedItem);
+      // Update columns state with the moved item
       const updatedColumns = {
         ...columns,
         [source.droppableId]: {
@@ -120,14 +134,19 @@ const Board = () => {
         },
       };
       setColumns(updatedColumns);
+      // Call updateColumns function to update backend with the new column order
       updateColumns({
         variables: { updatedColumns: transformInput(updatedColumns) },
       });
     } else {
+      // Moving item within the same column
+      // Retrieve column and its items
       const column = columns[source.droppableId];
       const copiedItems = [...column.items];
+      // Remove item from its original position and insert it at the destination position
       const [movedItem] = copiedItems.splice(source.index, 1);
       copiedItems.splice(destination.index, 0, movedItem);
+      // Update columns state with the moved item
       const updatedColumns = {
         ...columns,
         [source.droppableId]: {
@@ -136,6 +155,7 @@ const Board = () => {
         },
       };
       setColumns(updatedColumns);
+      // Call updateColumns function to update backend with the new column order
       updateColumns({
         variables: { updatedColumns: transformInput(updatedColumns) },
       });
