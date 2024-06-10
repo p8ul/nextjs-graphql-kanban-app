@@ -47,6 +47,7 @@ const Board = () => {
   });
 
   const [columns, setColumns] = useState([]);
+  const [totalColumns, setTotalColumns] = useState(0);
 
   const handleAddTask = (columnId: string, title: string) => {
     createTask({
@@ -60,6 +61,7 @@ const Board = () => {
   useEffect(() => {
     if (!loading) {
       setColumns(convertData(data) || []);
+      setTotalColumns(data?.columns?.length || 0);
     }
   }, [data, loading]);
 
@@ -132,7 +134,6 @@ const Board = () => {
         height: "100%",
         overflow: "scroll",
         paddingBottom: 5,
-       
       }}
     >
       <DragDropContext
@@ -145,7 +146,6 @@ const Board = () => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-               
               }}
               key={columnId}
             >
@@ -215,14 +215,18 @@ const Board = () => {
                                         item={item}
                                         columnId={columnId}
                                         onUpdateItem={() => {}}
-                                        updateTask={(columnId, taskId, task) => {
+                                        updateTask={(
+                                          columnId,
+                                          taskId,
+                                          task
+                                        ) => {
                                           updateTask({
                                             variables: {
                                               columnId,
                                               taskId,
-                                              task
-                                            }
-                                          })
+                                              task,
+                                            },
+                                          });
                                         }}
                                         onDelete={(columnId, taskId) => {
                                           deleteTask({
@@ -252,7 +256,7 @@ const Board = () => {
       </DragDropContext>
       <Box>
         <ColumnCreator
-          totalColumns={columns?.length || 0}
+          disableCreateButton={totalColumns > 5}
           onCreateColumn={(title: string) => {
             createColumn({
               variables: {

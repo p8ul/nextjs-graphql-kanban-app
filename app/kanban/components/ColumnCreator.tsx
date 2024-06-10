@@ -13,12 +13,12 @@ import InputForm from "@/app/components/Form/InputForm";
 
 interface ColumnCreatorProps {
   onCreateColumn: (title: string) => void;
-  totalColumns: number;
+  disableCreateButton: boolean
 }
 
 const ColumnCreator: React.FC<ColumnCreatorProps> = ({
   onCreateColumn,
-  totalColumns,
+  disableCreateButton,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -33,9 +33,9 @@ const ColumnCreator: React.FC<ColumnCreatorProps> = ({
                 <Button
                   sx={{ width: 200, padding: 0 }}
                   onClick={() => setIsEditing(true)}
-                  disabled={totalColumns > 5}
+                  disabled={disableCreateButton}
                 >
-                  Add Column
+                  {disableCreateButton ? 'Maximum column reached': 'Add Column' }
                 </Button>
               </CardContent>
             </Card>
