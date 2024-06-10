@@ -9,7 +9,7 @@ import { useDeleteColumn } from "../hooks/useDeleteColumn";
 import { useDeleteTask } from "../hooks/useDeleteTask";
 import { useUpdateColumns } from "../hooks/useUpdateColumns";
 import KanbanColumn from "../components/KanbanColumn";
-import { Box } from "@mui/material";
+import { Box, Snackbar, SnackbarOrigin } from "@mui/material";
 import KanBanTask from "../components/KanBanTask";
 import ColumnCreator from "../components/ColumnCreator";
 import { useUpdateColumnName } from "../hooks/useUpdateColumnName";
@@ -18,8 +18,22 @@ import { useUpdateTask } from "../hooks/useUpdateTask";
 
 const Board = () => {
   const { data, loading, error, refetch } = useGetColumns();
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
+
+  const handleOpenSnackbar = () => {
+    setOpenSnackbar(true);
+  };
+  const [showSnackbar, setShowSnackbar] = useState(false);
+
   const [createColumn] = useCreateColumn({
-    onComplete: () => refetch && refetch(),
+    onComplete: () => {
+      refetch && refetch();
+      setShowSnackbar(true)
+    },
   });
   const [createTask] = useCreateTask({
     onComplete: () => refetch && refetch(),
@@ -62,6 +76,10 @@ const Board = () => {
     if (!loading) {
       setColumns(convertData(data) || []);
       setTotalColumns(data?.columns?.length || 0);
+      if (data?.columns?.length > 4 && showSnackbar) {
+        handleOpenSnackbar();
+        setShowSnackbar(false)
+      }
     }
   }, [data, loading]);
 
@@ -256,7 +274,7 @@ const Board = () => {
       </DragDropContext>
       <Box>
         <ColumnCreator
-          disableCreateButton={totalColumns > 5}
+          disableCreateButton={totalColumns >= 5}
           onCreateColumn={(title: string) => {
             createColumn({
               variables: {
@@ -266,6 +284,13 @@ const Board = () => {
           }}
         />
       </Box>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={openSnackbar}
+        onClose={handleCloseSnackbar}
+        message="You have now reached maximum number of 5 columns."
+        key={"topright"}
+      />
     </Box>
   );
 };

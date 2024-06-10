@@ -9,6 +9,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="/favicon-32x32.png"
+      />
+      <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="/favicon-16x16.png"
+      />
+      <link rel="manifest" href="/manifest.json" />
+      <meta name="msapplication-TileColor" content="#da532c" />
+      <meta name="theme-color" content="#ffffff" />
       <body>
         <ThemeProvider theme={theme}>
           <ApolloWrapper>{children}</ApolloWrapper>
