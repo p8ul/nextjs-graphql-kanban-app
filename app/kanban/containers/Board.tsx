@@ -1,84 +1,27 @@
 // components/Board.tsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { useQuery, useMutation, gql } from "@apollo/client";
-import { v4 as uuid } from "uuid";
-
-const GET_COLUMNS = gql`
-  query GetColumns {
-    columns {
-      id
-      name
-      tasks {
-        id
-        content
-        title
-      
-      }
-    }
-  }
-`;
-
-const ADD_COLUMN = gql`
-  mutation AddColumn($name: String!) {
-    addColumn(name: $name) {
-      id
-      name
-      items {
-        id
-        content
-      }
-    }
-  }
-`;
-const itemsFromBackend = [
-  { id: uuid(), content: "First task" },
-  { id: uuid(), content: "Second task" },
-  { id: uuid(), content: "Third task" },
-  { id: uuid(), content: "Fourth task" },
-  { id: uuid(), content: "Fifth task" },
-];
-
-const columnsFromBackend = {
-  [uuid()]: {
-    name: "Requested",
-    items: itemsFromBackend,
-  },
-  [uuid()]: {
-    name: "To do",
-    items: [],
-  },
-  [uuid()]: {
-    name: "In Progress",
-    items: [],
-  },
-  [uuid()]: {
-    name: "Done",
-    items: [],
-  },
-};
-// console.log('columnsFromBackend :>> ', JSON.stringify(columnsFromBackend));
-
-const convertData = (original) => {
-  const result = {};
-
-  original?.columns?.forEach((column) => {
-    result[column.id] = {
-      name: column.title,
-      items: column.tasks.map((task) => ({ id: task.id, content: task.name })),
-    };
-  });
-
-  return result;
-};
+import { convertData } from "@/app/lib/util";
+import { useGetColumns } from "../hooks/useGetColumns";
+import { useCreateColumn } from "../hooks/useCreateColumn";
+import { useCreateTask } from "../hooks/useCreateTask";
+import { useDeleteColumn } from "../hooks/useDeleteColumn";
+import { useDeleteTask } from "../hooks/useDeleteTask";
 
 const Board = () => {
-  const { data, loading, error } = useQuery(GET_COLUMNS);
-  const [addColumn] = useMutation(ADD_COLUMN);
-  console.log("convertData(data) :>> ", convertData(data));
-  const [columns, setColumns] = useState(convertData(data) || []);
-  console.log("columns :>> ", columns);
-  console.log("columnsFromBackend :>> ", columnsFromBackend);
+  const { data, loading, error, refetch } = useGetColumns();
+  const [createColumn] = useCreateColumn({ onComplete: () => refetch && refetch() })
+  const [createTask] = useCreateTask({ onComplete: () => refetch && refetch() })
+  const [deleteColumn] = useDeleteColumn({ onComplete: () => refetch && refetch() })
+  const [deleteTask] = useDeleteTask({ onComplete: () => refetch && refetch() })
+
+  const [columns, setColumns] = useState([]);
+
+  useEffect(() => {
+    if (!loading) {
+      setColumns(convertData(data) || []);
+    }
+  }, [data, loading])
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -117,13 +60,12 @@ const Board = () => {
     }
   };
 
-  console.log("error :>> ", error);
-
   if (loading) return <p>Loading...</p>;
+  if (Object.keys(columns).length === 0) return <p>No data</p>
   if (error) return <p>Error :(</p>;
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
+    <div style={{ display: "flex", justifyContent: "center", height: "100%", overflow: 'scroll' }}>
       <DragDropContext
         onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
       >
@@ -138,6 +80,7 @@ const Board = () => {
               key={columnId}
             >
               <h2>{column.name}</h2>
+              <button onClick={() => deleteColumn({ variables: { id: columnId } })}>Delete</button>
               <div style={{ margin: 8 }}>
                 <Droppable droppableId={columnId} key={columnId}>
                   {(provided, snapshot) => {
@@ -180,6 +123,12 @@ const Board = () => {
                                     }}
                                   >
                                     {item.content}
+                                    <button onClick={() => deleteTask({
+                                      variables: {
+                                        columnId,
+                                        taskId: item.id
+                                      }
+                                    })}>Delete</button>
                                   </div>
                                 );
                               }}
@@ -187,15 +136,31 @@ const Board = () => {
                           );
                         })}
                         {provided.placeholder}
+                        <button onClick={() => createTask({
+                          variables: {
+                            columnId,
+                            title: "new task"
+                          }
+                        })}>Create Task</button>
                       </div>
                     );
                   }}
                 </Droppable>
+
               </div>
             </div>
           );
         })}
       </DragDropContext>
+      <div>
+        <button onClick={() => {
+          createColumn({
+            variables: {
+              title: "new column"
+            }
+          })
+        }}>Create column</button>
+      </div>
     </div>
   );
 };

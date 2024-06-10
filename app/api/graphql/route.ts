@@ -1,6 +1,7 @@
 import { ApolloServer } from "@apollo/server";
 import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { readFileSync, writeFileSync } from "fs";
+import { v4 as uuid } from "uuid";
 
 const typeDefs = `#graphql
   type Column {
@@ -26,7 +27,7 @@ const typeDefs = `#graphql
     deleteColumn(id: ID!): Boolean
     createTask(columnId: ID!, title: String!): Task
     deleteTask(columnId: ID!, taskId: ID!): Boolean
-    moveTask(taskId: ID!, sourceColumnId: ID!, targetColumnId: ID!): Boolean
+    updateColumns(columns: [Column!]!): Boolean
   }
 `;
 
@@ -38,7 +39,7 @@ const resolvers = {
   },
   Mutation: {
     createColumn: (_, { title }) => {
-      const column = { id: `${Date.now()}`, title, tasks: [] };
+      const column = { id: uuid(), title, tasks: [] };
       columns.push(column);
       saveData();
       return column;
@@ -49,9 +50,15 @@ const resolvers = {
       return true;
     },
     createTask: (_, { columnId, title }) => {
-      const task = { id: `${Date.now()}`, title };
+      const task = { id: uuid(), title };
       const column = columns.find((column) => column.id === columnId);
       column.tasks.push(task);
+      saveData();
+      return task;
+    },
+    updateColumns: (_, { updatedColumns }) => {
+      const task = { id: uuid(), title };
+      columns = updatedColumns
       saveData();
       return task;
     },
@@ -87,7 +94,6 @@ const saveData = () => {
 const loadData = () => {
   try {
     columns = JSON.parse(readFileSync("data.json", "utf-8"));
-    console.log("columns :>> ", columns);
   } catch (e) {
     columns = [];
   }

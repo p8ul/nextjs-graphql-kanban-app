@@ -5,7 +5,7 @@ import { useQuery, useMutation, gql, ApolloProvider } from "@apollo/client";
 import { Column as ColumnType } from "./types";
 import Column from "./components/Column";
 import client from "./lib/apolloClient";
-import Board from "./components/Board";
+import Board from "./kanban/containers/Board";
 import { Breadcrumbs, Link, Typography } from "@mui/material";
 
 const GET_COLUMNS = gql`
