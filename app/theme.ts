@@ -18,7 +18,7 @@ const theme = createTheme({
   typography: {
     fontFamily: roboto.style.fontFamily,
     h5: {
-      fontSize: "1.2rem", // Update this value to set your desired font size
+      fontSize: "1.2rem", 
     },
   },
   components: {

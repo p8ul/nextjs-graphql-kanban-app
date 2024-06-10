@@ -1,14 +1,14 @@
 import React from "react";
 import { Box, TextField, Button } from "@mui/material";
 
-interface MyComponentProps {
+interface InputFormProps {
   onAdd: (columnId: string, title: string) => void;
   onCancel: () => void;
   columnId?: string;
   value?: string;
 }
 
-const InputForm: React.FC<MyComponentProps> = ({
+const InputForm: React.FC<InputFormProps> = ({
   onAdd,
   onCancel,
   columnId,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, IconButton, Menu, MenuItem } from "@mui/material";
+import { Box, IconButton, Menu, MenuItem } from "@mui/material";
 import InputForm from "@/app/components/Form/InputForm";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 interface Item {
@@ -22,7 +22,6 @@ const KanBanTask: React.FC<MyComponentProps> = ({
   onDelete,
   updateTask,
 }) => {
-  const [title, setTitle] = useState(item.title);
   const [isEditing, setIsEditing] = useState(false);
   const [showActions, setShowActions] = useState(false);
 
@@ -69,7 +68,7 @@ const KanBanTask: React.FC<MyComponentProps> = ({
                   aria-expanded={open ? "true" : undefined}
                   onClick={handleClick}
                   sx={{
-                    padding: 0
+                    padding: 0,
                   }}
                 >
                   <MoreVertIcon />

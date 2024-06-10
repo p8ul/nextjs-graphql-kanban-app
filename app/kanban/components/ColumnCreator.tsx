@@ -1,8 +1,6 @@
-// src/ColumnCreator.tsx
 import React, { useState } from "react";
 import {
   Box,
-  TextField,
   Button,
   Paper,
   Card,
